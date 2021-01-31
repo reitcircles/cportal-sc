@@ -1,3 +1,4 @@
-id: e09d36c79dec9bd1b3d9e152247701cd0bb860b5ebfd1de8abb6735a
-type: role
-date: 1688318645
+policies:
+    - id: e09d36c79dec9bd1b3d9e152247701cd0bb860b5ebfd1de8abb6735a
+      type: role
+      date: 1688319418

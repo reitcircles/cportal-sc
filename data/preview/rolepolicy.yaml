@@ -5,10 +5,7 @@ policies:
 - id: e09d36c79dec9bd1b3d9e152247701cd0bb860b5ebfd1de8abb6735a
   type: role
   date: 1688325843
-- id: !!python/object/new:pycardano.hash.ScriptHash
-    state: !!python/tuple
-    - null
-    - _payload: !!binary |
-        5eV4XcbTKhH9dvpZSJEfHhKs8d4VzZ2UPuvA0g==
+- id: !!binary |
+    RTg/QklnZoWeXGWSEX591q1hHT1LnjeUP+IadA==
   type: role
-  date: 1689520407
+  date: 1689522656

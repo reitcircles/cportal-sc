@@ -1,0 +1,13 @@
+cardano-cli transaction build \
+	    --testnet-magic 1 \
+	    --tx-in $(cat oref1.tmp) \
+	    --required-signer wallet1.skey \
+            --tx-in-collateral $(cat oref1.tmp) \
+	    --tx-out $(cat registry.addr)+"2000000 lovelace"+"1 47afb4d79667578bc90f832f7daedb051b376fae19d9743b6c705d53.28313030295245464552454e4345"+"1 47afb4d79667578bc90f832f7daedb051b376fae19d9743b6c705d53.283232322955534552" \
+	    --tx-out-inline-datum-file datum0.json \
+	    --change-address $(cat wallet1.addr) \
+	    --mint "1 47afb4d79667578bc90f832f7daedb051b376fae19d9743b6c705d53.28313030295245464552454e4345"+"1 47afb4d79667578bc90f832f7daedb051b376fae19d9743b6c705d53.283232322955534552" \
+	    --mint-script-file mint_1.plutus \
+	    --mint-redeemer-file unit.json \
+	    --protocol-params-file protocol-params.json \
+	    --out-file tx.body

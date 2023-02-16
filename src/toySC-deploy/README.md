@@ -225,7 +225,7 @@ writeValidator
      -> IO
           (Either (cardano-api-1.35.3:Cardano.Api.Error.FileError ()) ())
 
-[ghci]$ Deploy ToySC> writeValidator "blockchain/toy.plutus" toyValidator
+[ghci]$ Deploy ToySC> writeValidator "ledger/toy.plutus" toyValidator
 Right ()
 ```
 
@@ -239,7 +239,7 @@ We will also need the serialized Unit:
 ```shell
 [ghci]$ Deploy ToySC> :t writeUnit 
 writeUnit :: FilePath -> IO ()
-[ghci]$ Deploy ToySC> writeUnit "blockchain/unit.json"
+[ghci]$ Deploy ToySC> writeUnit "ledger/unit.json"
 ```
 
 which yields:
@@ -259,9 +259,9 @@ Let us serialize a couple of instances of  `ToyRedeemer { key :: Integer }` , co
 writeJSON
   :: PlutusTx.IsData.Class.ToData a => FilePath -> a -> IO ()
 
-[ghci]$ Deploy ToySC> writeJSON "blockchain/fortyThree.json" $ ToyRedeemer 43
+[ghci]$ Deploy ToySC> writeJSON "ledger/fortyThree.json" $ ToyRedeemer 43
 
-[ghci]$ Deploy ToySC> writeJSON "blockchain/twentySeven.json" $ ToyRedeemer 27
+[ghci]$ Deploy ToySC> writeJSON "ledger/twentySeven.json" $ ToyRedeemer 27
 ```
 
 Lock funds on the script

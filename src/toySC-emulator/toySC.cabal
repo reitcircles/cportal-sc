@@ -1,7 +1,7 @@
 cabal-version:      3.0
 name:               toySC
 version:            0.1.0.0
-synopsis:           Very basic example of a plutus contract
+synopsis:           Very basic example of a plutus contract. Emulator testing.
 stability:          experimental
 
 -- A longer description of the package.
@@ -41,7 +41,7 @@ library
     import: lang
     
     exposed-modules:
-        ToySC, Deploy
+        Test, OffChain, ToySC
 
     build-depends:
       base >= 4.9 && < 5,

@@ -5,9 +5,11 @@
 
 ## About
 
-This project implements a minting policy which explores an basic implementation of CIP 68 (see refrence [1]).
+This project implements a minting policy which explores a basic implementation of CIP 68 (see refrence [1]).
 
 The main objective is to use this example as a guide to construct an efficient work-flow involving on-chain and off-chain code, as well as (in the near future) testing and optimization.
+
+The main takeaway of this exercise is that giving clear *constraint specifications* is key for future smart contract development.
 
 
 ## Introduction
@@ -17,7 +19,7 @@ As with any validator, the key for the correct implementation of a Minting Polic
 -   Off-chain code *constructs* the desired transactions.
 -   On-chain code *destructs* transactions.  What we mean by this figure of speech is that on-chain code is the gatekeeper that will turn away all transactions except for those that satisfy the most stringent validity conditions.
 
-Of the two, On-chain code is the most important.  This is because the paramount aspects of a smart contract are *security* and *correctness*.  This is due to the Blockhain's "code is law" ethos and the fact that, once deployed, it is not possible to change a smart contract.  It is therefore of utmost importance that no ilicit transaction be allowed.
+The paramount aspects of a smart contract are *security* and *correctness*.  Thus, of the two listed above, On-chain code is the most important.  This is due to the Blockhain's "code is law" ethos and the fact that, once deployed, it is not possible to change a smart contract.  It is therefore of utmost importance that no ilicit transaction be allowed.
 
 The following section on Specifications describes the *requirements* and *constraints* of the minting policy implemented in this project.  The constraints describe various ways in which the minting *should fail*, so they are closely related to on-chain code.
 
@@ -117,4 +119,3 @@ All the files needed for off-chain code are in directory `ledger`.  The files wi
 ## References
 
 [1]  [CIP 68 - Datum Metadata Standard](https://cips.cardano.org/cips/cip68/) .
-

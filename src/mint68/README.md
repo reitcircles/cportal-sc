@@ -69,9 +69,13 @@ cardano-cli address build --payment-script-file registry.plutus \
 
 ## Suggested Exercise
 
-Using **PyCardano**, construct transactions that try to violate one or more of the constraints specified above.  For reference, the shell script that builds a transaction (with **cardano-cli**) satisfying  all the constraints is provided in file `mint_txbuild.sh` .
+Using **PyCardano**, construct transactions that try to violate one or more of the constraints specified above.
+
+For reference, the shell script that builds a transaction (with **cardano-cli**) *satisfying  all the constraints* is provided in file `mint_txbuild.sh` .
 
 (Also provided is the file `mint_execute_only_once.sh`, which builds, signs and submits the correct transaction.  Keep in mind that this script **can only be executed once**.)
+
+### Files
 
 All the files needed for off-chain code are in directory `ledger`.  The files with extension `.plutus` are serializations of the corresponding validator or minting scripts.
 
@@ -102,9 +106,9 @@ All the files needed for off-chain code are in directory `ledger`.  The files wi
 
 
 <tr>
-<td class="org-left">mint<sub>1.plutus</sub></td>
+<td class="org-left">mint_1.plutus</td>
 <td class="org-left">Minting policy</td>
-<td class="org-left">TxOutRef (oref1a.tmp)</td>
+<td class="org-left">TxOutRef (file oref1a.tmp)</td>
 </tr>
 </tbody>
 </table>

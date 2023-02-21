@@ -5,8 +5,7 @@ module Deploy
     ( writeJSON
     , writeValidator
     , writePolicy
-    , writePolicy'
-    , writePolicy''
+    -- , writePolicy'
     , writeCS
     , writeUnit
     ) where
@@ -19,7 +18,6 @@ import qualified Data.ByteString.Lazy  as LBS
 import qualified Data.ByteString.Short as SBS
 import           PlutusTx              (Data (..))
 import qualified PlutusTx
--- import qualified Ledger
 import qualified Plutus.V2.Ledger.Api as V2L
 import qualified Plutus.Script.Utils.V2.Scripts as Scripts
 
@@ -39,23 +37,19 @@ writeUnit file = writeJSON file ()
 writeValidator :: FilePath -> Scripts.Validator -> IO (Either (FileError ()) ())
 writeValidator file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) file Nothing . PlutusScriptSerialised . SBS.toShort . LBS.toStrict . serialise . V2L.unValidatorScript
 
-writePolicy' :: FilePath -> Scripts.MintingPolicy -> IO (Either (FileError ()) ())
-writePolicy' file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) file Nothing . PlutusScriptSerialised . SBS.toShort . LBS.toStrict . serialise . V2L.unMintingPolicyScript
-
-writePolicy'' :: FilePath -> Scripts.MintingPolicy -> IO (Either (FileError ()) ())
-writePolicy'' file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) file Nothing . PlutusScriptSerialised . SBS.toShort . LBS.toStrict . serialise . V2L.Validator . V2L.unMintingPolicyScript
+-- writePolicy' :: FilePath -> Scripts.MintingPolicy -> IO (Either (FileError ()) ())
+-- writePolicy' file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) file Nothing . PlutusScriptSerialised . SBS.toShort . LBS.toStrict . serialise . V2L.unMintingPolicyScript
 
 writeCS :: FilePath -> V2L.CurrencySymbol -> IO ()
 writeCS file cs = writeFile file (show cs)
 
 type FilePathWithoutExt = String
 
--- | Please omit extension.  Generates .plutus & .hex files (script & currency symbol).
+-- | Please omit file extension.  Generates .plutus & .policy files (script & currency symbol).
 writePolicy :: FilePathWithoutExt -> Scripts.MintingPolicy -> IO ()
 writePolicy file mp = do
-  let cs = Scripts.scriptCurrencySymbol mp
-      fileP = file <> ".plutus"
-      fileH = file <> ".hex"
+  let fileP = file <> ".plutus"
+      fileH = file <> ".policy"
   _ <- writeFileTextEnvelope @(PlutusScript PlutusScriptV2) fileP Nothing . PlutusScriptSerialised . SBS.toShort . LBS.toStrict . serialise . V2L.unMintingPolicyScript $ mp
-  writeFile fileH (show cs)
+  writeFile fileH (show $ Scripts.scriptCurrencySymbol mp)
 

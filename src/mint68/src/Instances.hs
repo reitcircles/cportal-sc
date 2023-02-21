@@ -6,26 +6,14 @@
 {-# LANGUAGE NoImplicitPrelude     #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
---{-# LANGUAGE TemplateHaskell       #-}
---{-# LANGUAGE TypeApplications      #-}
---{-# LANGUAGE TypeFamilies          #-}
---{-# LANGUAGE TypeOperators         #-}
 
 module Instances where
 
---import           Data.Aeson          (ToJSON, FromJSON)
---import           GHC.Generics        (Generic)
---import qualified PlutusTx
 import           PlutusTx.Prelude       as TxPrelude hiding (unless)
--- import           PlutusTx.Builtins.Class
 import qualified Plutus.Script.Utils.V2.Scripts  as Scripts
---import           Plutus.Script.Utils.Typed (mkUntypedValidator, mkUntypedMintingPolicy)
--- import           Ledger.Ada             as Ada
 import qualified Ledger                 as L
 import           Ledger.Value
 import           Plutus.V2.Ledger.Api
---import           Plutus.V2.Ledger.Contexts as V2LC
---import           Plutus.Script.Utils.V2.Typed.Scripts.Validators as V2V
 
 import Config
 import Registry
@@ -44,12 +32,12 @@ pkhA = L.PaymentPubKeyHash . PubKeyHash . hexConvert $ "0e454ff759f367e7fd5b2d0e
 registryA :: Scripts.Validator
 registryA = registry pkhA
 
--- | Registry's validator hash.  Obtained with:
--- cardano-cli transaction policyid --script-file registry.plutus
+-- | Registry's validator hash.
 registryHashA :: ValidatorHash
-registryHashA = ValidatorHash $ hexConvert "dd2725f7c2919d01c7e80b3f3f7fdb374ad5854f9269b1d90caf9d82"
+registryHashA = validatorHash' registryA
 
--- | UTxO's reference that parametrizes NFT (to be consumed at minting)
+-- | UTxO's reference that parametrizes NFT (to be consumed at minting). Also stored in
+-- file 'oref1a.tmp'.
 oref1_tmp :: TxOutRef
 oref1_tmp = TxOutRef
   { txOutRefId = TxId $ hexConvert "4a16c4f23a1855392496650deac62eb6c1fa1887f7a2e59ee2a3a3c7b67fa733"

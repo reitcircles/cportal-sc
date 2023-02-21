@@ -13,16 +13,11 @@
 
 module Registry where
 
---import           Data.Aeson          (ToJSON, FromJSON)
---import           GHC.Generics        (Generic)
 import qualified PlutusTx
 import           PlutusTx.Prelude       as TxPrelude hiding (unless)
--- import           PlutusTx.Builtins.Class
 import qualified Plutus.Script.Utils.V2.Scripts  as Scripts
 import           Plutus.Script.Utils.Typed (mkUntypedValidator)
--- import           Ledger.Ada             as Ada
 import qualified Ledger                 as L
---import           Ledger.Value
 import           Plutus.V2.Ledger.Api
 import           Plutus.V2.Ledger.Contexts as V2LC
 import           Plutus.Script.Utils.V2.Typed.Scripts.Validators as V2V

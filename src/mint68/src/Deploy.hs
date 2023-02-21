@@ -6,6 +6,7 @@ module Deploy
     , writeValidator
     , writePolicy
     , writePolicy'
+    , writePolicy''
     , writeCS
     , writeUnit
     ) where
@@ -40,6 +41,10 @@ writeValidator file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) file 
 
 writePolicy' :: FilePath -> Scripts.MintingPolicy -> IO (Either (FileError ()) ())
 writePolicy' file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) file Nothing . PlutusScriptSerialised . SBS.toShort . LBS.toStrict . serialise . V2L.unMintingPolicyScript
+
+writePolicy'' :: FilePath -> Scripts.MintingPolicy -> IO (Either (FileError ()) ())
+writePolicy'' file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) file Nothing . PlutusScriptSerialised . SBS.toShort . LBS.toStrict . serialise . V2L.Validator . V2L.unMintingPolicyScript
+
 writeCS :: FilePath -> V2L.CurrencySymbol -> IO ()
 writeCS file cs = writeFile file (show cs)
 

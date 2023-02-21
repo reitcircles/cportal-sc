@@ -34,7 +34,7 @@ A trusted Administrator is responsible of minting an NFT representing a real est
 -   should be linked to *mutable metadata* that stores the various aspects associated with the property, and
 -   be deposited in the owner's wallet address.
 
-Following CIP 68 overall idea, instead of minting one NFT, the minting policy requires the simultaneous minting of a pair of NFTs with the same policy id and named, respectively, "(100)REFERENCE" and "(222)USER".  The USER token is the one deposited in the owner's wallet and the REFERENCE token is deposited at a particular script address which only allows the Administrator to spend its UTxOs (and thus evolve their datums).  The valid datums at this script address are required to have the record structure
+Following CIP 68 overall idea, instead of minting one NFT, our minting policy requires the simultaneous minting of a pair of NFTs with the same policy id and named, respectively, "(100)REFERENCE" and "(222)USER".  The USER token is the one deposited in the owner's wallet and the REFERENCE token is deposited at a particular script address which only allows the Administrator to spend its UTxOs (and thus evolve their datums).  The valid datums at this script address are required to have the record structure
 
 ```haskell
 data RegDatum = RegDatum
@@ -54,11 +54,11 @@ The minting should fail if any of the following constraints is not satisfied.
 -   Their names are, respectively, (222)USER and (100)REFERENCE.
 -   The USER token is deposited at a public-key-hash address (i.e. a wallet address).
 -   The REFERENCE token is deposited at a particular script address, which is `addr_test1wrwjwf0hc2ge6qw8aq9n70mlmvm544v9f7fxnvwepjhemqsr0cy2k` .  We call this script *the Registry*.
+
     *Note:*  this address is obtained with
 
 ```shell
-cardano-cli address build --payment-script-file registry.plutus \
-    --testnet-magic 2 --out-file registry.addr
+cardano-cli address build --payment-script-file registry.plutus --testnet-magic 2 --out-file registry.addr
 ```
 
 -   The Registry has the property that only the Administrator (i.e. the wallet whose verification key is `wallet1.vkey`) can spend its contents.  (Thus, only the administrator can evolve the reference datums.)

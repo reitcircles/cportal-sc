@@ -46,9 +46,11 @@ mkPolicy mp () ctx = traceIfFalse "UTxO not consumed" hasUTxO                   
                      traceIfFalse "unrecognized ref token address" refTokenLocked &&
                      traceIfFalse "user token not sent properly" usrTokenSent
   where
+    -- Script's context info
     info :: TxInfo
     info = scriptContextTxInfo ctx
 
+    -- Transaction outputs
     outputs :: [TxOut]
     outputs = txInfoOutputs info
 
@@ -71,7 +73,7 @@ mkPolicy mp () ctx = traceIfFalse "UTxO not consumed" hasUTxO                   
                                            (tn2, tn1) == (refTkNm, usrTkNm))
       _                                -> False
 
-    -- Checks whether reference token was locked at the Registry's script
+    -- Checks whether reference token with valid datum was locked at the Registry's script
     refTokenLocked :: Bool
     refTokenLocked = case filter (hasOneToken refTkNm) outputs of
       [refOut] -> case txOutDatum refOut of
@@ -83,7 +85,7 @@ mkPolicy mp () ctx = traceIfFalse "UTxO not consumed" hasUTxO                   
         _               -> traceError "inline Datum missing"
       _        -> traceError "expected output with ref token"
 
-    -- Checks whether user token was sent to some user's wallet
+    -- Checks whether user token was sent to a wallet
     usrTokenSent :: Bool
     usrTokenSent = case filter (hasOneToken usrTkNm) outputs of
       [usrOut] -> case addressCredential $ txOutAddress usrOut of

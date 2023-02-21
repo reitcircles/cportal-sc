@@ -20,7 +20,7 @@ import Registry
 import Minting
 
 
--- Concrete instances of Registry script and minting policy.
+-- Concrete instances of Registry script and minting polic --
 
 -- | Administrator's public key-hash.  Obtained with:
 -- cardano-cli address key-hash --payment-verification-key-file wallet1.vkey
@@ -44,6 +44,7 @@ oref1_tmp = TxOutRef
   , txOutRefIdx = 1
   }
 
+-- | Parameters that determine a concrete instance of the minting policy.
 params_1 :: MintingParams
 params_1 = MintingParams
   { mpUtxo = oref1_tmp
@@ -53,14 +54,17 @@ params_1 = MintingParams
   , mpUsrName = userTokenName
   }
 
+-- | Concrete instance of a minting policy.
 policy_1 :: MintingPolicy
 policy_1 = policy params_1
 
+-- | The Policy Id.
 curSymbol_1 :: CurrencySymbol
 curSymbol_1 = curSymbol params_1
 
--- Datum example.
+-- Datum --
 
+-- | A Datum example.
 datum_1 :: RegDatum
 datum_1 = RegDatum
   { rdURL  = "ipfs://QmVUSyxrvSEwATqGNefKYVtx5ixJrBnD9XjMRJx9JK9Nuh"

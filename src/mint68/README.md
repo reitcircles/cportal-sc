@@ -78,7 +78,7 @@ This project's code is stored in two directories:
     The project's executable is defined in `Main.hs`, which implements the API that gets the policy parameters.
 
 
-## API implementation {#api-implementation}
+## API implementation
 
 *Objective:*  implement an API that allows to pass the *policy parameters* to a plutus program in order to obtain the seriealized scripts and policy id associated with the minting policy defined in this project.
 

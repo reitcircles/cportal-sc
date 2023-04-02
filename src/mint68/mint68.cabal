@@ -37,11 +37,23 @@ common lang
     if flag(defer-plugin-errors)
         ghc-options: -fplugin-opt PlutusTx.Plugin:defer-errors
 
+executable write-minting-policy
+    main-is: Main.hs
+    hs-source-dirs: app
+    default-language: Haskell2010
+    build-depends:
+      base >= 4.9 && < 5,
+      aeson,
+      bytestring,
+      plutus-ledger-api,
+      plutus-ledger,
+      mint68
+
 library
     import: lang
     
     exposed-modules:
-        Instances, Minting, Registry, Config, Deploy
+        Config, Minting, Registry, Deploy
 
     build-depends:
       base >= 4.9 && < 5,
@@ -49,11 +61,11 @@ library
       bytestring -any,
       containers -any,
       freer-extras -any,
-      playground-common -any,
+      --playground-common -any,
       plutus-contract -any,
       plutus-ledger -any,
       plutus-ledger-api -any,
-      plutus-ledger-constraints -any,
+      --plutus-ledger-constraints -any,
       plutus-tx -any,
       plutus-tx-plugin -any,
       plutus-script-utils -any,

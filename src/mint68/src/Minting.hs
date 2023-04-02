@@ -20,7 +20,7 @@ import           PlutusTx.Prelude       as TxPrelude hiding (unless)
 import qualified Plutus.Script.Utils.V2.Scripts  as Scripts
 import           Plutus.Script.Utils.Typed (mkUntypedMintingPolicy)
 import qualified Ledger                 as L
-import           Ledger.Value
+import           Plutus.V1.Ledger.Value
 import           Plutus.V2.Ledger.Api
 import           Plutus.V2.Ledger.Contexts as V2LC
 

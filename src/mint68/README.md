@@ -237,6 +237,17 @@ cardano-cli transaction build \
 Once the transaction is buiilt, it can be signed and submitted with `./ledger/mint_SignAndSubmit.sh` .
 
 
+## Comments
+
+-   This project uses a Plutus executable to get the policy parameters and as a result generate the serialized scripts and plutus id.  An alternative to this approach would be to pass the policy parameters at the level of the off-chain code.  This is certainly  possible using *Lucid*.
+
+-   With this approach, a Plutus validator without parameters would be serialized into CBOR.  This CBOR would only depend on the minting logic but not on the parameters (administrator's pub-key-hash and utxo to be consumed).  So, once generated with Plutus, this CBOR is fixed and can be used with many instances of the parameters.
+
+-   This CBOR would be called within Lucid and only then the parameters would be passed.  This would have the advantage that no Plutus executable would need to be run again.  (Thus the person writing the off-chain code would not need to have Plutus Application Platform installed.)
+
+-   I do not know if this is possible using *PyCardano*.  I searched in the [documentation](https://pycardano.readthedocs.io/en/latest/index.html) but could not find something conclusive.
+
+
 ## References
 
 [1]  [CIP 68 - Datum Metadata Standard](https://cips.cardano.org/cips/cip68/) .

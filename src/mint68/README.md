@@ -176,7 +176,7 @@ The actual minting is done with an off-chain tool like *cardano-cli*, *Lucid,* *
 $ cabal repl
 ```
 
-Inside the REPL:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Inside the REPL:
 
 ```shell
 > import Deploy
@@ -234,7 +234,7 @@ cardano-cli transaction build \
 	    --out-file tx_mint.body
 ```
 
-Once the transaction is buiilt, it can be signed and submitted with `./ledger/mint_SignAndSubmit.sh` .
+Once the transaction is built, it can be signed and submitted with `./ledger/mint_SignAndSubmit.sh` .
 
 
 ## Comments

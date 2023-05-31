@@ -14,52 +14,42 @@ import Minting
 import Deploy
 
 
-data PolicyParams = PolicyParams { utxoRefId :: String, utxoRefIdx :: Integer, pkh :: String }
-  deriving Show
+newtype PlatformParams = PlatformParams { pkh :: String }
 
-instance FromJSON PolicyParams where
-  parseJSON (Object v) = PolicyParams <$> v .: "utxoRefId" <*> v .: "utxoRefIdx" <*> v .: "pkh"
+instance FromJSON PlatformParams where
+  parseJSON (Object v) = PlatformParams <$> v .: "pkh"
   parseJSON _          = fail "Expected object with policy parameters"
 
 main :: IO ()
 main = do
-  -- Read JSON file with policy parameters into a bytestring
-  input <- B.readFile "ledger/policy-params.json"
+  -- Read JSON file with platform parameters into a bytestring
+  input <- B.readFile "ledger/platform-params.json"
 
   -- Parse JSON bytestring into corresponding Haskell value
-  let result = eitherDecode input :: Either String PolicyParams
+  let result = eitherDecode input :: Either String PlatformParams
   case result of
     Left err -> putStrLn err
     Right pparams -> do
       -- Administrator's pub-key-hash
-      let pkhA = L.PaymentPubKeyHash . PubKeyHash . hexConvert . pkh $ pparams
+      let pkhAdmin = L.PaymentPubKeyHash . PubKeyHash . hexConvert . pkh $ pparams
 
-      -- Registry's validator
-      let registryA = registry pkhA
+      -- Platform's Registry validator
+      let registryPlatform = registry pkhAdmin
 
-      -- Parameters determining a concrete instance of the minting policy
-      let params_1 = MintingParams
-            { mpUtxo = TxOutRef
-                { txOutRefId = TxId . hexConvert . utxoRefId $ pparams
-                , txOutRefIdx = utxoRefIdx pparams
-                }
-            , mpPKH = pkhA
-            , mpValHash = validatorHash' registryA
+      -- Parameters determining a pre-minting policy
+      let premint_params = PreMintParams
+            { mpPKH     = pkhAdmin
+            , mpValHash = validatorHash' registryPlatform
             , mpRefName = referenceTokenName
             , mpUsrName = userTokenName
             }
 
       -- Instance of minting policy
-      let policy_1 = policy params_1
-
-      -- Instance of policy id
-      let curSymbol_1 = curSymbol params_1
+      let premint_policy = preMintPolicy premint_params
 
       -- Write serialized registry script and minting policy
       putStrLn "Writing serialized registry script in 'registry.plutus'..."
-      writeValidator "ledger/registry.plutus" registryA
-      putStrLn "Writing serialized minting policy in 'mint.plutus'..."
-      writePolicy "ledger/mint.plutus" policy_1
-      putStrLn "Writing policy id in 'mint.policy'..."
-      writeCS "ledger/mint.policy" $ curSymbol_1
+      writeValidator "ledger/registry.plutus" registryPlatform
+      putStrLn "Writing serialized pre-minting policy in 'premint.plutus'..."
+      writePolicy "ledger/premint.plutus" premint_policy
       putStrLn "Done"

@@ -54,6 +54,7 @@ The minting should fail if any of the following constraints is not satisfied:
 
 -   The pair of USER and REFERENCE NFT's are minted in the same transaction.  No other token is minted.
 -   Their names are, respectively, (222)USER and (100)REFERENCE.
+-   The two tokens share the same currency symbol (the policy id).
 -   The USER token is deposited at a public-key-hash address (i.e. a wallet address).
 -   The REFERENCE token is deposited at a particular script address determined by the policy parameters (see section 'API implementation' below).  We call this script *the Registry*.
 -   The Registry has the property that only the 'Administrator' can spend its contents.  (Thus, only the administrator can evolve the reference datums.)
@@ -71,7 +72,7 @@ This project's code is stored in two directories:
     -   `Config.hs` - configuration files
     -   `Deploy.hs` - deployment tools
     -   `Minting.hs` - defines minting policy
-    -   `Registry.hs` - defines de registry's validator
+    -   `Registry.hs` - defines the registry's validator
 
 2.  `app`
 

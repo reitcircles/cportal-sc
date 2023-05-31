@@ -17,8 +17,8 @@ import           Data.Aeson          (ToJSON, FromJSON)
 import           GHC.Generics        (Generic)
 import qualified PlutusTx
 import           PlutusTx.Prelude       as TxPrelude hiding (unless)
-import qualified Plutus.Script.Utils.V2.Scripts  as Scripts
-import           Plutus.Script.Utils.Typed (mkUntypedMintingPolicy)
+-- import qualified Plutus.Script.Utils.V2.Scripts  as Scripts
+import           Plutus.Script.Utils.V2.Typed.Scripts (mkUntypedMintingPolicy)
 import qualified Ledger                 as L
 import           Plutus.V1.Ledger.Value
 import           Plutus.V2.Ledger.Api
@@ -27,24 +27,28 @@ import           Plutus.V2.Ledger.Contexts as V2LC
 import Registry (RegDatum(..))
 
 
-data MintingParams = MintingParams
-  { mpUtxo    :: TxOutRef             -- UTxO to spend
-  , mpPKH     :: L.PaymentPubKeyHash  -- Authorized minting PubKeyHash
+data PreMintParams = PreMintParams
+  { mpPKH     :: L.PaymentPubKeyHash  -- Authorized minting PubKeyHash
   , mpValHash :: ValidatorHash        -- Registry's validator hash
   , mpRefName :: TokenName            -- Reference token name
   , mpUsrName :: TokenName            -- User token name
   } deriving (Generic, FromJSON, ToJSON)
 
-PlutusTx.makeLift ''MintingParams
+newtype MintInstanceParams = MintInstanceParams { mpUtxo :: TxOutRef }  -- UTxO to spend
+  deriving (Generic, FromJSON, ToJSON)
 
-{-# INLINABLE mkPolicy #-}
--- | Minting Policy ensures that NFT is minted in pairs: reference and user NFT's
-mkPolicy :: MintingParams -> () -> V2LC.ScriptContext -> Bool
-mkPolicy mp () ctx = traceIfFalse "UTxO not consumed" hasUTxO                     &&
-                     traceIfFalse "unauthenticated" authenticated                 &&
-                     traceIfFalse "wrong amount minted" checkMintedAmount         &&
-                     traceIfFalse "unrecognized ref token address" refTokenLocked &&
-                     traceIfFalse "user token not sent properly" usrTokenSent
+PlutusTx.makeLift ''PreMintParams
+PlutusTx.unstableMakeIsData ''MintInstanceParams
+
+{-# INLINABLE mkPolicyT #-}
+-- | Minting Policy ensures, among other things, that NFT is minted in pairs: reference
+-- and user NFT's
+mkPolicyT :: PreMintParams -> MintInstanceParams -> () -> V2LC.ScriptContext -> Bool
+mkPolicyT pmp mip () ctx = traceIfFalse "UTxO not consumed" hasUTxO                     &&
+                           traceIfFalse "unauthenticated" authenticated                 &&
+                           traceIfFalse "wrong amount minted" checkMintedAmount         &&
+                           traceIfFalse "unrecognized ref token address" refTokenLocked &&
+                           traceIfFalse "user token not sent properly" usrTokenSent
   where
     -- Script's context info
     info :: TxInfo
@@ -56,14 +60,14 @@ mkPolicy mp () ctx = traceIfFalse "UTxO not consumed" hasUTxO                   
 
     -- Checks whether the chosen UTxO was spent
     hasUTxO :: Bool
-    hasUTxO = any (\i -> txInInfoOutRef i == (mpUtxo mp)) $ txInfoInputs info
+    hasUTxO = any (\i -> txInInfoOutRef i == (mpUtxo mip)) $ txInfoInputs info
 
     -- Only the "administrator" can mint
     authenticated :: Bool
-    authenticated = txSignedBy info $ L.unPaymentPubKeyHash (mpPKH mp)
+    authenticated = txSignedBy info $ L.unPaymentPubKeyHash (mpPKH pmp)
 
     refTkNm, usrTkNm :: TokenName
-    (refTkNm, usrTkNm) = (mpRefName mp, mpUsrName mp)
+    (refTkNm, usrTkNm) = (mpRefName pmp, mpUsrName pmp)
 
     -- Checks whether the pair of reference and user NFT's was minted
     checkMintedAmount :: Bool
@@ -79,11 +83,11 @@ mkPolicy mp () ctx = traceIfFalse "UTxO not consumed" hasUTxO                   
       [refOut] -> case txOutDatum refOut of
         OutputDatum dat -> if checkDatum dat
           then case addressCredential $ txOutAddress refOut of
-                 ScriptCredential vh -> vh == (mpValHash mp)
+                 ScriptCredential vh -> vh == (mpValHash pmp)
                  _                   -> traceError "ref token not sent to a script"
           else traceError "unexpected error"
         _               -> traceError "inline Datum missing"
-      _        -> traceError "expected output with ref token"
+      _        -> traceError "expected output with exactly one ref token"
 
     -- Checks whether user token was sent to a wallet
     usrTokenSent :: Bool
@@ -104,13 +108,22 @@ mkPolicy mp () ctx = traceIfFalse "UTxO not consumed" hasUTxO                   
     checkDatum dat = case unsafeFromBuiltinData $ getDatum dat of
       RegDatum {} -> True
 
--- | Minting policy compiled to Plutus Core
-policy :: MintingParams -> MintingPolicy
-policy mp = mkMintingPolicyScript $
-  $$(PlutusTx.compile [|| mkUntypedMintingPolicy . mkPolicy ||])
-  `PlutusTx.applyCode`
-  PlutusTx.liftCode mp
+{-# INLINABLE mkPolicy #-}
+-- | Untyped minting policy
+mkPolicy :: PreMintParams -> BuiltinData -> BuiltinData -> V2LC.ScriptContext -> Bool
+mkPolicy pmp mipbd ubd = mkPolicyT pmp mip u
+  where
+    mip = PlutusTx.unsafeFromBuiltinData mipbd
+    u   = PlutusTx.unsafeFromBuiltinData ubd
 
--- | Currency symbol of minting policy
-curSymbol :: MintingParams -> CurrencySymbol
-curSymbol = Scripts.scriptCurrencySymbol . policy
+-- | Minting policy compiled to Plutus Core
+preMintPolicy :: PreMintParams -> MintingPolicy
+preMintPolicy pmp = MintingPolicy $ fromCompiledCode
+  ($$(PlutusTx.compile [|| occurrence ||])
+     `PlutusTx.applyCode` PlutusTx.liftCode pmp)
+  where
+    occurrence pmp' mipbd = mkUntypedMintingPolicy $ mkPolicy pmp' mipbd
+    
+-- -- | Currency symbol of minting policy
+-- curSymbol :: MintingParams -> CurrencySymbol
+-- curSymbol = Scripts.scriptCurrencySymbol . policy

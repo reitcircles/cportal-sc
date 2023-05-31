@@ -16,7 +16,6 @@ module Registry where
 import qualified PlutusTx
 import           PlutusTx.Prelude       as TxPrelude hiding (unless)
 import qualified Plutus.Script.Utils.V2.Scripts  as Scripts
-import           Plutus.Script.Utils.Typed (mkUntypedValidator)
 import qualified Ledger                 as L
 import           Plutus.V2.Ledger.Api
 import           Plutus.V2.Ledger.Contexts as V2LC
@@ -53,7 +52,7 @@ typedRegistry pkh = V2V.mkTypedValidator @TypedReg
      `PlutusTx.applyCode` PlutusTx.liftCode pkh)
   $$(PlutusTx.compile [|| wrap ||])
   where
-    wrap = mkUntypedValidator @ScriptContext @RegDatum @()
+    wrap = mkUntypedValidator @RegDatum @()
 
 -- | Registry script
 registry :: L.PaymentPubKeyHash -> Scripts.Validator
